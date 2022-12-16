@@ -35,10 +35,10 @@ async function getHotelsWithRooms(userId: number, hotelId: number) {
   return hotel;
 }
 
-async function getHotelsWithRoomInfo() {
+async function getHotelsWithRoomInfo(userId: number) {
+  await listHotels(userId);
   const hotels = await hotelRepository.findHotelsWithRoomInfo();
-  console.log(hotels);
-  console.log(hotels[0].Rooms[0]);
+  return hotels;
 }
 
 const hotelService = {

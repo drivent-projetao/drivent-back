@@ -1,6 +1,25 @@
 import { PrismaClient } from '@prisma/client';
 import dayjs from 'dayjs';
+import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
+
+async function createUser() {
+  let testUser = await prisma.user.findFirst({
+    where: {
+      email: 'teste@gmail.com',
+    },
+  });
+  if (!testUser) {
+    const hashedPassword = await bcrypt.hash('123456', 12);
+    user = await prisma.user.create({
+      data: {
+        email: 'teste@gmail.com',
+        password: hashedPassword,
+      },
+    });
+  }
+  console.log({ testUser });
+}
 
 async function createHotels() {
   await prisma.hotel.create({
@@ -38,6 +57,7 @@ async function main() {
   }
   console.log({ event });
 
+  await createUser();
   await createHotels();
 }
 

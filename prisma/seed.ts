@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import bcrypt from 'bcrypt';
 import faker from '@faker-js/faker';
 import { generateCPF, getStates } from '@brazilian-utils/brazilian-utils';
-import { User, Enrollment, TicketType, Ticket, TicketStatus } from '@prisma/client';
+import { User, Enrollment, TicketType, Ticket, TicketStatus, Hotel } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function createEvent() {
@@ -144,8 +144,8 @@ async function createPayment(ticket: Ticket) {
   console.log({ payment });
 }
 
-async function createHotels() {
-  const hotels = await prisma.hotel.findMany();
+async function createHotels(): Promise<Hotel[]> {
+  let hotels = await prisma.hotel.findMany();
   if (hotels.length === 0) {
     await prisma.hotel.create({
       data: {
@@ -165,6 +165,28 @@ async function createHotels() {
         image: 'https://cdn.thomascook.com/optimized3/13281/4/image_1c7c4303bed6404fb1dfe0a686e8613a.webp',
       },
     });
+    hotels = await prisma.hotel.findMany();
+  }
+  console.log({ hotels });
+  return hotels;
+}
+
+async function createRooms(hotel: Hotel) {
+  let rooms = await prisma.room.findMany({
+    where: {
+      hotelId: hotel.id,
+    },
+  });
+  if (rooms.length === 0) {
+    for (let i = 1; i <= 16; i++) {
+      await prisma.room.create({
+        data: {
+          name: String(i),
+          capacity: 1 + Math.floor(Math.random() * 4),
+          hotelId: hotel.id,
+        },
+      });
+    }
   }
 }
 
@@ -175,7 +197,10 @@ async function main() {
   const ticketTypes = await createTicketTypes();
   const ticket = await createTicket(enrollment, ticketTypes[0]);
   await createPayment(ticket);
-  await createHotels();
+  const hotels = await createHotels();
+  hotels.forEach(async (hotel) => {
+    await createRooms(hotel);
+  });
 }
 
 main()

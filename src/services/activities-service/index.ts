@@ -1,7 +1,9 @@
-import { notFoundError } from "@/errors";
 import activitiyRepository from "@/repositories/activity-repository";
+import enrollmentRepository from "@/repositories/enrollment-repository";
+import ticketRepository from "@/repositories/ticket-repository";
 import { Activity } from "@prisma/client";
 import { formatDateWithWeekday, formatDate, formatTime } from "@/utils/formatDate";
+import { unauthorizedError, notFoundError } from "@/errors";
 
 type processedActivities = Omit<Activity, "localId" | "createdAt" | "updatedAt" | "date" | "startTime" | "endTime"> & {
   local: string;
@@ -11,7 +13,15 @@ type processedActivities = Omit<Activity, "localId" | "createdAt" | "updatedAt" 
 };
 type getActivitiesResult = { dates: string[]; activities: processedActivities[] };
 
-async function getActivities(): Promise<getActivitiesResult> {
+async function getActivities(userId: number): Promise<getActivitiesResult> {
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw unauthorizedError();
+
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote) {
+    throw unauthorizedError();
+  }
+
   const activitiesResult = await activitiyRepository.findManyActivities();
   if (!activitiesResult) {
     throw notFoundError();

@@ -56,6 +56,13 @@ describe("GET /enrollments", () => {
 
       const response = await server.get("/enrollments").set("Authorization", `Bearer ${token}`);
 
+      let address = null;
+      if (Array.isArray(enrollment.Address)) {
+        address = enrollment.Address[0];
+      } else {
+        address = enrollment.Address;
+      }
+
       expect(response.status).toBe(httpStatus.OK);
       expect(response.body).toEqual({
         id: enrollment.id,
@@ -64,14 +71,14 @@ describe("GET /enrollments", () => {
         birthday: enrollment.birthday.toISOString(),
         phone: enrollment.phone,
         address: {
-          id: enrollment.Address[0].id,
-          cep: enrollment.Address[0].cep,
-          street: enrollment.Address[0].street,
-          city: enrollment.Address[0].city,
-          state: enrollment.Address[0].state,
-          number: enrollment.Address[0].number,
-          neighborhood: enrollment.Address[0].neighborhood,
-          addressDetail: enrollment.Address[0].addressDetail,
+          id: address.id,
+          cep: address.cep,
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          number: address.number,
+          neighborhood: address.neighborhood,
+          addressDetail: address.addressDetail,
         },
       });
     });

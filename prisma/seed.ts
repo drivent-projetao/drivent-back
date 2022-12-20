@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import dayjs from 'dayjs';
-import bcrypt from 'bcrypt';
-import faker from '@faker-js/faker';
-import { generateCPF, getStates } from '@brazilian-utils/brazilian-utils';
-import { User, Enrollment, TicketType, Ticket, TicketStatus, Hotel } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+import dayjs from "dayjs";
+import bcrypt from "bcrypt";
+import faker from "@faker-js/faker";
+import { generateCPF, getStates } from "@brazilian-utils/brazilian-utils";
+import { User, Enrollment, TicketType, Ticket, TicketStatus, Hotel } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function createEvent() {
@@ -11,11 +11,11 @@ async function createEvent() {
   if (!event) {
     event = await prisma.event.create({
       data: {
-        title: 'Driven.t',
-        logoImageUrl: 'https://files.driveneducation.com.br/images/logo-rounded.png',
-        backgroundImageUrl: 'linear-gradient(to right, #FA4098, #FFD77F)',
+        title: "Driven.t",
+        logoImageUrl: "https://files.driveneducation.com.br/images/logo-rounded.png",
+        backgroundImageUrl: "linear-gradient(to right, #FA4098, #FFD77F)",
         startsAt: dayjs().toDate(),
-        endsAt: dayjs().add(21, 'days').toDate(),
+        endsAt: dayjs().add(21, "days").toDate(),
       },
     });
   }
@@ -25,14 +25,14 @@ async function createEvent() {
 async function createUser(): Promise<User> {
   let testUser = await prisma.user.findFirst({
     where: {
-      email: 'teste@gmail.com',
+      email: "teste@gmail.com",
     },
   });
   if (!testUser) {
-    const hashedPassword = await bcrypt.hash('123456', 12);
+    const hashedPassword = await bcrypt.hash("123456", 12);
     testUser = await prisma.user.create({
       data: {
-        email: 'teste@gmail.com',
+        email: "teste@gmail.com",
         password: hashedPassword,
       },
     });
@@ -50,10 +50,10 @@ async function createEnrollmentWithAddress(user: User): Promise<Enrollment> {
   if (!enrollment) {
     enrollment = await prisma.enrollment.create({
       data: {
-        name: 'Teste',
+        name: "Teste",
         cpf: generateCPF(),
         birthday: faker.date.past(),
-        phone: faker.phone.phoneNumber('(##) 9####-####'),
+        phone: faker.phone.phoneNumber("(##) 9####-####"),
         userId: user.id,
       },
     });
@@ -78,7 +78,7 @@ async function createTicketTypes(): Promise<TicketType[]> {
   if (ticketTypes.length === 0) {
     await prisma.ticketType.create({
       data: {
-        name: 'Presencial',
+        name: "Presencial",
         price: 250,
         isRemote: false,
         includesHotel: true,
@@ -86,7 +86,7 @@ async function createTicketTypes(): Promise<TicketType[]> {
     });
     await prisma.ticketType.create({
       data: {
-        name: 'Online',
+        name: "Online",
         price: 100,
         isRemote: true,
         includesHotel: false,
@@ -149,20 +149,20 @@ async function createHotels(): Promise<Hotel[]> {
   if (hotels.length === 0) {
     await prisma.hotel.create({
       data: {
-        name: 'Driven Resort',
-        image: 'https://strapi-taua.s3.sa-east-1.amazonaws.com/medium_principal_a92281080b_80b34f8d4b.jpeg',
+        name: "Driven Resort",
+        image: "https://strapi-taua.s3.sa-east-1.amazonaws.com/medium_principal_a92281080b_80b34f8d4b.jpeg",
       },
     });
     await prisma.hotel.create({
       data: {
-        name: 'Driven Palace',
-        image: 'https://worldtraveller73.files.wordpress.com/2020/07/dsc_0364.jpg-1.jpeg?w=1280&h=848&crop=1',
+        name: "Driven Palace",
+        image: "https://worldtraveller73.files.wordpress.com/2020/07/dsc_0364.jpg-1.jpeg?w=1280&h=848&crop=1",
       },
     });
     await prisma.hotel.create({
       data: {
-        name: 'Driven World',
-        image: 'https://cdn.thomascook.com/optimized3/13281/4/image_1c7c4303bed6404fb1dfe0a686e8613a.webp',
+        name: "Driven World",
+        image: "https://cdn.thomascook.com/optimized3/13281/4/image_1c7c4303bed6404fb1dfe0a686e8613a.webp",
       },
     });
     hotels = await prisma.hotel.findMany();
@@ -172,7 +172,7 @@ async function createHotels(): Promise<Hotel[]> {
 }
 
 async function createRooms(hotel: Hotel) {
-  let rooms = await prisma.room.findMany({
+  const rooms = await prisma.room.findMany({
     where: {
       hotelId: hotel.id,
     },

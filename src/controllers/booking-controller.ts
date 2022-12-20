@@ -68,3 +68,17 @@ export async function changeBooking(req: AuthenticatedRequest, res: Response) {
   }
 }
 
+export async function countBooking(req: AuthenticatedRequest, res: Response) {
+  try {
+    const roomId = Number(req.params.roomId);
+    if (!roomId) {
+      return res.sendStatus(httpStatus.BAD_REQUEST);
+    }
+
+    const count = await bookingService.countBookingByRoomId(roomId);
+    
+    return res.status(httpStatus.OK).send({ count: count });
+  } catch (error) {
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+}

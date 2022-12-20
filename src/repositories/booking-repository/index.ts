@@ -50,11 +50,20 @@ async function upsertBooking({ id, roomId, userId }: UpdateParams) {
   });
 }
 
+async function countByRoomId(roomId: number) {
+  return prisma.booking.count({
+    where: {
+      roomId
+    },
+  });
+}
+
 const bookingRepository = {
   create,
   findByRoomId,
   findByUserId,
   upsertBooking,
+  countByRoomId
 };
 
 export default bookingRepository;

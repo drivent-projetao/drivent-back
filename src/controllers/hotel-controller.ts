@@ -38,3 +38,13 @@ export async function getHotelsWithRooms(req: AuthenticatedRequest, res: Respons
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }
+
+export async function getHotelsWithRoomInfo(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  try {
+    const hotels = await hotelService.getHotelsWithRoomInfo(userId);
+    return res.status(httpStatus.OK).send(hotels);
+  } catch (error) {
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+}

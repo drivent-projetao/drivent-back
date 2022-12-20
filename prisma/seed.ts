@@ -172,7 +172,7 @@ async function createHotels(): Promise<Hotel[]> {
 }
 
 async function createRooms(hotel: Hotel) {
-  let rooms = await prisma.room.findMany({
+  const rooms = await prisma.room.findMany({
     where: {
       hotelId: hotel.id,
     },

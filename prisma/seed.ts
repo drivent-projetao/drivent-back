@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
-import dayjs from 'dayjs';
-import bcrypt from 'bcrypt';
-import faker from '@faker-js/faker';
-import { generateCPF, getStates } from '@brazilian-utils/brazilian-utils';
-import { User, Enrollment, TicketType, Ticket, TicketStatus, Hotel } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+import dayjs from "dayjs";
+import bcrypt from "bcrypt";
+import faker from "@faker-js/faker";
+import { generateCPF, getStates } from "@brazilian-utils/brazilian-utils";
+import { User, Enrollment, TicketType, Ticket, TicketStatus, Hotel, Local } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function createEvent() {
@@ -11,11 +11,11 @@ async function createEvent() {
   if (!event) {
     event = await prisma.event.create({
       data: {
-        title: 'Driven.t',
-        logoImageUrl: 'https://files.driveneducation.com.br/images/logo-rounded.png',
-        backgroundImageUrl: 'linear-gradient(to right, #FA4098, #FFD77F)',
+        title: "Driven.t",
+        logoImageUrl: "https://files.driveneducation.com.br/images/logo-rounded.png",
+        backgroundImageUrl: "linear-gradient(to right, #FA4098, #FFD77F)",
         startsAt: dayjs().toDate(),
-        endsAt: dayjs().add(21, 'days').toDate(),
+        endsAt: dayjs().add(21, "days").toDate(),
       },
     });
   }
@@ -25,14 +25,14 @@ async function createEvent() {
 async function createUser(): Promise<User> {
   let testUser = await prisma.user.findFirst({
     where: {
-      email: 'teste@gmail.com',
+      email: "teste@gmail.com",
     },
   });
   if (!testUser) {
-    const hashedPassword = await bcrypt.hash('123456', 12);
+    const hashedPassword = await bcrypt.hash("123456", 12);
     testUser = await prisma.user.create({
       data: {
-        email: 'teste@gmail.com',
+        email: "teste@gmail.com",
         password: hashedPassword,
       },
     });
@@ -50,10 +50,10 @@ async function createEnrollmentWithAddress(user: User): Promise<Enrollment> {
   if (!enrollment) {
     enrollment = await prisma.enrollment.create({
       data: {
-        name: 'Teste',
+        name: "Teste",
         cpf: generateCPF(),
         birthday: faker.date.past(),
-        phone: faker.phone.phoneNumber('(##) 9####-####'),
+        phone: faker.phone.phoneNumber("(##) 9####-####"),
         userId: user.id,
       },
     });
@@ -78,7 +78,7 @@ async function createTicketTypes(): Promise<TicketType[]> {
   if (ticketTypes.length === 0) {
     await prisma.ticketType.create({
       data: {
-        name: 'Presencial',
+        name: "Presencial",
         price: 250,
         isRemote: false,
         includesHotel: true,
@@ -86,7 +86,7 @@ async function createTicketTypes(): Promise<TicketType[]> {
     });
     await prisma.ticketType.create({
       data: {
-        name: 'Online',
+        name: "Online",
         price: 100,
         isRemote: true,
         includesHotel: false,
@@ -149,20 +149,20 @@ async function createHotels(): Promise<Hotel[]> {
   if (hotels.length === 0) {
     await prisma.hotel.create({
       data: {
-        name: 'Driven Resort',
-        image: 'https://strapi-taua.s3.sa-east-1.amazonaws.com/medium_principal_a92281080b_80b34f8d4b.jpeg',
+        name: "Driven Resort",
+        image: "https://strapi-taua.s3.sa-east-1.amazonaws.com/medium_principal_a92281080b_80b34f8d4b.jpeg",
       },
     });
     await prisma.hotel.create({
       data: {
-        name: 'Driven Palace',
-        image: 'https://worldtraveller73.files.wordpress.com/2020/07/dsc_0364.jpg-1.jpeg?w=1280&h=848&crop=1',
+        name: "Driven Palace",
+        image: "https://worldtraveller73.files.wordpress.com/2020/07/dsc_0364.jpg-1.jpeg?w=1280&h=848&crop=1",
       },
     });
     await prisma.hotel.create({
       data: {
-        name: 'Driven World',
-        image: 'https://cdn.thomascook.com/optimized3/13281/4/image_1c7c4303bed6404fb1dfe0a686e8613a.webp',
+        name: "Driven World",
+        image: "https://cdn.thomascook.com/optimized3/13281/4/image_1c7c4303bed6404fb1dfe0a686e8613a.webp",
       },
     });
     hotels = await prisma.hotel.findMany();
@@ -190,6 +190,137 @@ async function createRooms(hotel: Hotel) {
   }
 }
 
+async function createLocales() {
+  let locales = await prisma.local.findMany();
+  if (locales.length === 0) {
+    await prisma.local.create({
+      data: {
+        name: "Auditório Principal",
+      },
+    });
+    await prisma.local.create({
+      data: {
+        name: "Auditório Lateral",
+      },
+    });
+    await prisma.local.create({
+      data: {
+        name: "Sala de Workshop",
+      },
+    });
+    locales = await prisma.local.findMany();
+  }
+  console.log({ locales });
+  return locales;
+}
+
+async function createActivities(locales: Local[]) {
+  let activities = await prisma.activity.findMany();
+  if (activities.length === 0 && locales.length >= 3) {
+    await prisma.activity.create({
+      data: {
+        name: "Minecraft: Montando o PC ideal",
+        capacity: 27,
+        localId: locales[0].id,
+        date: new Date("2022-12-24T09:00:00"),
+        startTime: new Date("2022-12-24T09:00:00"),
+        endTime: new Date("2022-12-24T10:00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "LoL: Montando o PC ideal",
+        capacity: 10,
+        localId: locales[0].id,
+        date: new Date("2022-12-24T10:00:00"),
+        startTime: new Date("2022-12-24T10:00:00"),
+        endTime: new Date("2022-12-24T11:00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "Palestra x",
+        capacity: 27,
+        localId: locales[1].id,
+        date: new Date("2022-12-24T09:00:00"),
+        startTime: new Date("2022-12-24T09:00:00"),
+        endTime: new Date("2022-12-24T11:00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "Palestra y",
+        capacity: 27,
+        localId: locales[2].id,
+        date: new Date("2022-12-24T09:00:00"),
+        startTime: new Date("2022-12-24T09:00:00"),
+        endTime: new Date("2022-12-24T10:00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "Palestra z",
+        capacity: 1,
+        localId: locales[2].id,
+        date: new Date("2022-12-24T10:00:00"),
+        startTime: new Date("2022-12-24T10:00:00"),
+        endTime: new Date("2022-12-24T11:00:00"),
+      },
+    });
+
+    await prisma.activity.create({
+      data: {
+        name: "Ceia de Natal",
+        capacity: 20,
+        localId: locales[0].id,
+        date: new Date("2022-12-25T09:00:00"),
+        startTime: new Date("2022-12-25T09:00:00"),
+        endTime: new Date("2022-12-25T11:00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "Workshop: Arroz com uva passa",
+        capacity: 20,
+        localId: locales[2].id,
+        date: new Date("2022-12-25T09:00:00"),
+        startTime: new Date("2022-12-25T09:00:00"),
+        endTime: new Date("2022-12-25T10:00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "Atividade qualquer 1",
+        capacity: 20,
+        localId: locales[0].id,
+        date: new Date("2022-12-26T09:00:00"),
+        startTime: new Date("2022-12-26T09:00:00"),
+        endTime: new Date("2022-12-26T12:00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "Atividade qualquer 2",
+        capacity: 5,
+        localId: locales[1].id,
+        date: new Date("2022-12-26T09:00:00"),
+        startTime: new Date("2022-12-26T09:00:00"),
+        endTime: new Date("2022-12-26T10:00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "Atividade qualquer 3",
+        capacity: 60,
+        localId: locales[2].id,
+        date: new Date("2022-12-26T09:00:00"),
+        startTime: new Date("2022-12-26T09:00:00"),
+        endTime: new Date("2022-12-26T11:00:00"),
+      },
+    });
+  }
+}
+
 async function main() {
   await createEvent();
   const user = await createUser();
@@ -201,6 +332,8 @@ async function main() {
   hotels.forEach(async (hotel) => {
     await createRooms(hotel);
   });
+  const locales = await createLocales();
+  await createActivities(locales);
 }
 
 main()

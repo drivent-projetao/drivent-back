@@ -81,6 +81,14 @@ async function createTicketTypes(): Promise<TicketType[]> {
         name: "Presencial",
         price: 250,
         isRemote: false,
+        includesHotel: false,
+      },
+    });
+    await prisma.ticketType.create({
+      data: {
+        name: "Presencial",
+        price: 600,
+        isRemote: false,
         includesHotel: true,
       },
     });

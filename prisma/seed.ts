@@ -334,7 +334,7 @@ async function main() {
   const user = await createUser();
   const enrollment = await createEnrollmentWithAddress(user);
   const ticketTypes = await createTicketTypes();
-  const ticket = await createTicket(enrollment, ticketTypes[0]);
+  const ticket = await createTicket(enrollment, ticketTypes[1]);
   await createPayment(ticket);
   const hotels = await createHotels();
   hotels.forEach(async (hotel) => {

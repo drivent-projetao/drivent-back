@@ -190,7 +190,7 @@ async function createRooms(hotel: Hotel) {
       await prisma.room.create({
         data: {
           name: String(i),
-          capacity: 1 + Math.floor(Math.random() * 4),
+          capacity: 1 + Math.floor(Math.random() * 3),
           hotelId: hotel.id,
         },
       });

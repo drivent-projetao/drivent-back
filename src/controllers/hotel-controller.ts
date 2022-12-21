@@ -45,6 +45,8 @@ export async function getHotelsWithRoomInfo(req: AuthenticatedRequest, res: Resp
     const hotels = await hotelService.getHotelsWithRoomInfo(userId);
     return res.status(httpStatus.OK).send(hotels);
   } catch (error) {
+    if (error.name === "cannotListHotelsError") return res.sendStatus(httpStatus.UNAUTHORIZED);
+    if (error.name === "NotFoundError") return res.sendStatus(httpStatus.NOT_FOUND);
     return res.sendStatus(httpStatus.BAD_REQUEST);
   }
 }

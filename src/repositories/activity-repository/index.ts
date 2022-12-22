@@ -11,8 +11,15 @@ async function findManyActivities() {
   });
 }
 
+async function findUsersByActivity(activityId: number) {
+  return prisma.userActivity.findMany({
+    where: { activityId },
+  });
+}
+
 const activityRepository = {
   findManyActivities,
+  findUsersByActivity,
 };
 
 export default activityRepository;

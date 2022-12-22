@@ -43,8 +43,25 @@ async function getActivities(userId: number): Promise<getActivitiesResult> {
   return { dates, activities };
 }
 
+async function getNumberOfUsersByActivityId(userId: number, activityId: number) {
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw unauthorizedError();
+
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote) {
+    throw unauthorizedError();
+  }
+
+  const result = (await activitiyRepository.findUsersByActivity(activityId)).length;
+  if (result === null) {
+    throw notFoundError();
+  }
+  return result;
+}
+
 const activitiesService = {
   getActivities,
+  getNumberOfUsersByActivityId
 };
 
 export default activitiesService;

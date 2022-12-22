@@ -11,6 +11,14 @@ async function findManyActivities() {
   });
 }
 
+async function findById(id: number) {
+  return prisma.activity.findUnique({
+    where: {
+      id
+    }
+  });
+}
+
 async function findUsersByActivity(activityId: number) {
   return prisma.userActivity.findMany({
     where: { activityId },
@@ -34,6 +42,7 @@ async function findLocationsWithActivities(date: Date) {
 
 const activityRepository = {
   findManyActivities,
+  findById,
   findUsersByActivity,
   findLocationsWithActivities
 };

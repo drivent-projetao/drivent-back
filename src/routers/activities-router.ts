@@ -7,6 +7,6 @@ const activitiesRouter = Router();
 activitiesRouter
   .all("/*", authenticateToken)
   .get("/", getActivities)
-  .get("/locations", getActivitiesWithLocation);
+  .get("/:date", getActivitiesWithLocation);
 
 export { activitiesRouter };

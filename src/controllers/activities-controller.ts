@@ -17,9 +17,10 @@ export async function getActivities(req: AuthenticatedRequest, res: Response) {
 
 export async function getActivitiesWithLocation(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  const { date } = req.body;
+  const { date } = req.params;
+  const newDate = new Date(date.replace("-", "/"));
   try {
-    const activities = await activitiesService.getActivitiesByLocation(userId, date);
+    const activities = await activitiesService.getActivitiesByLocation(userId, newDate);
     return res.status(httpStatus.OK).send(activities);
   } catch (error) {
     if (error.name === "NotFoundError") return res.sendStatus(httpStatus.NOT_FOUND);

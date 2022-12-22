@@ -1,4 +1,5 @@
-import { cannotBookingError, notFoundError } from "@/errors";
+import { unauthorizedError, notFoundError } from "@/errors";
+import { formatDate, formatTime } from "@/utils/formatDate";
 import activityRepository from "@/repositories/activity-repository";
 import applicationRepository from "@/repositories/application-repository";
 import enrollmentRepository from "@/repositories/enrollment-repository";
@@ -7,12 +8,12 @@ import tikectRepository from "@/repositories/ticket-repository";
 async function checkEnrollmentTicket(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
   if (!enrollment) {
-    throw cannotBookingError();
+    throw unauthorizedError();
   }
   const ticket = await tikectRepository.findTicketByEnrollmentId(enrollment.id);
 
   if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote) {
-    throw cannotBookingError();
+    throw unauthorizedError();
   }
 }
 
@@ -21,21 +22,25 @@ async function checkValidApplication(activityId: number, userId: number) {
   if (!activity) {
     throw notFoundError();
   }
-  const date = activity.date;
-  const startTime = activity.startTime;
 
+  const date = formatDate(activity.date);
+  const startTime = formatTime(activity.startTime);
+ 
   const applications = await getApplications(userId);
+  
   const unavailability = applications
-    .filter((application) => 
-      application.date === date && application.startTime == startTime
+    .filter( application => 
+      application.date === date && application.startTime === startTime
     );
-  if (unavailability) {
-    throw cannotBookingError();
+  
+  if (unavailability.length > 0) {
+    throw unauthorizedError();
   }
 
   const countApplications = await applicationRepository.countByActivityId(activityId);
+ 
   if(countApplications === activity.capacity) {
-    throw cannotBookingError();
+    throw unauthorizedError();
   }
 }
 
@@ -52,8 +57,8 @@ async function getApplications(userId: number) {
       id: a.id,
       activityId: a.activityId,
       capacity: a.Activity.capacity,
-      date: a.Activity.date,
-      startTime: a.Activity.startTime
+      date: formatDate(a.Activity.date),
+      startTime: formatTime(a.Activity.startTime)
     };
   });
   

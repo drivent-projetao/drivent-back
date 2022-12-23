@@ -25,12 +25,14 @@ async function checkValidApplication(activityId: number, userId: number) {
 
   const date = formatDate(activity.date);
   const startTime = formatTime(activity.startTime);
+  const endTime = formatTime(activity.endTime);
  
   const applications = await getApplications(userId);
   
   const unavailability = applications
     .filter( application => 
-      application.date === date && application.startTime === startTime
+      application.date === date && 
+        (application.startTime === startTime || application.endTime === endTime)
     );
   
   if (unavailability.length > 0) {
@@ -58,11 +60,18 @@ async function getApplications(userId: number) {
       activityId: a.activityId,
       capacity: a.Activity.capacity,
       date: formatDate(a.Activity.date),
-      startTime: formatTime(a.Activity.startTime)
+      startTime: formatTime(a.Activity.startTime),
+      endTime: formatTime(a.Activity.endTime)
     };
   });
   
   return applications;
+}
+
+async function findApplicationByActivityId(userId: number, activityId: number) {
+  await checkEnrollmentTicket(userId);
+
+  return applicationRepository.findByActivityId({ activityId, userId });
 }
 
 async function postApplicationById(userId: number, activityId: number) {
@@ -71,10 +80,18 @@ async function postApplicationById(userId: number, activityId: number) {
 
   return applicationRepository.create({ activityId, userId });
 }
+
+async function deleteApplication(userId: number, activityId: number) {
+  await checkEnrollmentTicket(userId);
+
+  return applicationRepository.deleteById(activityId);
+}
   
 const applicationsService = {
   getApplications,
+  findApplicationByActivityId,
   postApplicationById,
+  deleteApplication
 };
   
 export default applicationsService;

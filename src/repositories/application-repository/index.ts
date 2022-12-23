@@ -12,6 +12,15 @@ async function create({ activityId, userId }: CreateParams) {
   });
 }
 
+async function findByActivityId({ activityId, userId }: CreateParams)  {
+  return prisma.userActivity.findFirst({
+    where: {
+      activityId,
+      userId
+    }
+  });
+}
+
 async function findByUserId(userId: number) {
   return prisma.userActivity.findMany({
     where: { 
@@ -40,7 +49,7 @@ async function deleteById(id: number) {
 }
 
 const applicationRepository = {
-  findByUserId, create, countByActivityId, deleteById
+  findByUserId, findByActivityId, create, countByActivityId, deleteById
 };
 
 export default applicationRepository;

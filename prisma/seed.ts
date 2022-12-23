@@ -199,7 +199,6 @@ async function createRooms(hotel: Hotel) {
 }
 
 async function createLocales() {
-  new Date().toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"})
   let locales = await prisma.local.findMany();
   if (locales.length === 0) {
     await prisma.local.create({

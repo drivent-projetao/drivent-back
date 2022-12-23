@@ -1,11 +1,14 @@
 import { Router } from "express";
 import { authenticateToken } from "@/middlewares";
-import { postApplication } from "@/controllers";
+import { getApplications, getApplication, postApplication, deleteApplication } from "@/controllers";
 
 const applicationsRouter = Router();
 
 applicationsRouter
   .all("/*", authenticateToken)
-  .post("/", postApplication);
+  .get("/", getApplications)
+  .get("/:activityId", getApplication)
+  .post("/", postApplication)
+  .delete("/:activityId", deleteApplication);
 
 export { applicationsRouter };

@@ -19,6 +19,12 @@ async function findById(id: number) {
   });
 }
 
+async function findUsersByActivity(activityId: number) {
+  return prisma.userActivity.findMany({
+    where: { activityId },
+  });
+}
+
 async function findLocationsWithActivities(date: Date) {
   return prisma.local.findMany({
     include: {
@@ -37,6 +43,7 @@ async function findLocationsWithActivities(date: Date) {
 const activityRepository = {
   findManyActivities,
   findById,
+  findUsersByActivity,
   findLocationsWithActivities
 };
 

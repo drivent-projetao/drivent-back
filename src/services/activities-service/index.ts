@@ -39,9 +39,26 @@ async function getActivitiesByLocation(userId: number, date: Date) {
   return locations;
 }
 
+async function getNumberOfUsersByActivityId(userId: number, activityId: number) {
+  const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
+  if (!enrollment) throw unauthorizedError();
+
+  const ticket = await ticketRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket || ticket.status === "RESERVED" || ticket.TicketType.isRemote) {
+    throw unauthorizedError();
+  }
+
+  const result = (await activitiyRepository.findUsersByActivity(activityId)).length;
+  if (result === null) {
+    throw notFoundError();
+  }
+  return result;
+}
+
 const activitiesService = {
   getActivitiesDates,
-  getActivitiesByLocation
+  getActivitiesByLocation,
+  getNumberOfUsersByActivityId
 };
 
 export default activitiesService;

@@ -301,9 +301,9 @@ async function createActivities(locales: Local[]) {
         name: "Atividade qualquer 1",
         capacity: 20,
         localId: locales[0].id,
-        date: new Date("2022-12-26T09:00:00-00:00"),
-        startTime: new Date("2022-12-26T09:00:00-00:00"),
-        endTime: new Date("2022-12-26T12:00:00-00:00"),
+        date: new Date("2023-12-26T09:00:00-00:00"),
+        startTime: new Date("2023-12-26T09:00:00-00:00"),
+        endTime: new Date("2023-12-26T12:00:00-00:00"),
       },
     });
     await prisma.activity.create({
@@ -311,9 +311,9 @@ async function createActivities(locales: Local[]) {
         name: "Atividade qualquer 2",
         capacity: 5,
         localId: locales[1].id,
-        date: new Date("2022-12-26T09:00:00-00:00"),
-        startTime: new Date("2022-12-26T09:00:00-00:00"),
-        endTime: new Date("2022-12-26T10:00:00-00:00"),
+        date: new Date("2023-12-26T09:00:00-00:00"),
+        startTime: new Date("2023-12-26T09:00:00-00:00"),
+        endTime: new Date("2023-12-26T10:00:00-00:00"),
       },
     });
     await prisma.activity.create({
@@ -321,9 +321,19 @@ async function createActivities(locales: Local[]) {
         name: "Atividade qualquer 3",
         capacity: 60,
         localId: locales[2].id,
-        date: new Date("2022-12-26T09:00:00-00:00"),
-        startTime: new Date("2022-12-26T09:00:00-00:00"),
-        endTime: new Date("2022-12-26T11:00:00-00:00"),
+        date: new Date("2023-12-26T09:00:00-00:00"),
+        startTime: new Date("2023-12-26T09:00:00-00:00"),
+        endTime: new Date("2023-12-26T11:00:00-00:00"),
+      },
+    });
+    await prisma.activity.create({
+      data: {
+        name: "Atividade qualquer 4",
+        capacity: 60,
+        localId: locales[2].id,
+        date: new Date(),
+        startTime: new Date(),
+        endTime: new Date(),
       },
     });
   }

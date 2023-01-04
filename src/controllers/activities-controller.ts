@@ -18,7 +18,18 @@ export async function getActivitiesDates(req: AuthenticatedRequest, res: Respons
 export async function getActivitiesWithLocation(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
   const { date } = req.params;
+  let isValidDate = date.replace("-", "");
+  isValidDate = isValidDate.replace("-", "");
+
+  const todayDate = new Date();
+  const today = todayDate.toISOString().split("T")[0];
+
+  if(!isValidDate || isNaN(Number(isValidDate)) || isValidDate.length !== 8 || date < today) {
+    return res.sendStatus(httpStatus.BAD_REQUEST);
+  }
+
   const newDate = new Date(date.replace("-", "/"));
+
   try {
     const activities = await activitiesService.getActivitiesByLocation(userId, newDate);
     return res.status(httpStatus.OK).send(activities);

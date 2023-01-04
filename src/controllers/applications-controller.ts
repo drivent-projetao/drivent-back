@@ -20,7 +20,6 @@ export async function getApplication(req: AuthenticatedRequest, res: Response) {
   try {
     const { userId } = req;
     const activityId = Number(req.params.activityId);
-    console.log(activityId);
 
     if (!activityId) {
       return res.sendStatus(httpStatus.BAD_REQUEST);

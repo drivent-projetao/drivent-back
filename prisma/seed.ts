@@ -230,9 +230,9 @@ async function createActivities(locales: Local[]) {
         name: "Minecraft: Montando o PC ideal",
         capacity: 27,
         localId: locales[0].id,
-        date: new Date("2022-12-24T09:00:00-00:00"),
-        startTime: new Date("2022-12-24T09:00:00-00:00"),
-        endTime: new Date("2022-12-24T10:00:00-00:00"),
+        date: new Date("2023-12-24T09:00:00-00:00"),
+        startTime: new Date("2023-12-24T09:00:00-00:00"),
+        endTime: new Date("2023-12-24T10:00:00-00:00"),
       },
     });
     await prisma.activity.create({
@@ -240,9 +240,9 @@ async function createActivities(locales: Local[]) {
         name: "LoL: Montando o PC ideal",
         capacity: 10,
         localId: locales[0].id,
-        date: new Date("2022-12-24T10:00:00-00:00"),
-        startTime: new Date("2022-12-24T10:00:00-00:00"),
-        endTime: new Date("2022-12-24T11:00:00-00:00"),
+        date: new Date("2023-12-24T10:00:00-00:00"),
+        startTime: new Date("2023-12-24T10:00:00-00:00"),
+        endTime: new Date("2023-12-24T11:00:00-00:00"),
       },
     });
     await prisma.activity.create({
@@ -250,9 +250,9 @@ async function createActivities(locales: Local[]) {
         name: "Palestra x",
         capacity: 27,
         localId: locales[1].id,
-        date: new Date("2022-12-24T09:00:00-00:00"),
-        startTime: new Date("2022-12-24T09:00:00-00:00"),
-        endTime: new Date("2022-12-24T11:00:00-00:00"),
+        date: new Date("2023-12-24T09:00:00-00:00"),
+        startTime: new Date("2023-12-24T09:00:00-00:00"),
+        endTime: new Date("2023-12-24T11:00:00-00:00"),
       },
     });
     await prisma.activity.create({
@@ -260,9 +260,9 @@ async function createActivities(locales: Local[]) {
         name: "Palestra y",
         capacity: 27,
         localId: locales[2].id,
-        date: new Date("2022-12-24T09:00:00-00:00"),
-        startTime: new Date("2015-12-24T09:00:00-00:00"),
-        endTime: new Date("2022-12-24T10:00:00-00:00"),
+        date: new Date("2023-12-24T09:00:00-00:00"),
+        startTime: new Date("2023-12-24T09:00:00-00:00"),
+        endTime: new Date("2023-12-24T10:00:00-00:00"),
       },
     });
     await prisma.activity.create({
@@ -270,9 +270,9 @@ async function createActivities(locales: Local[]) {
         name: "Palestra z",
         capacity: 1,
         localId: locales[2].id,
-        date: new Date("2022-12-24T10:00:00-00:00"),
-        startTime: new Date("2022-12-24T10:00:00-00:00"),
-        endTime: new Date("2022-12-24T11:00:00-00:00"),
+        date: new Date("2023-12-24T10:00:00-00:00"),
+        startTime: new Date("2023-12-24T10:00:00-00:00"),
+        endTime: new Date("2023-12-24T11:00:00-00:00"),
       },
     });
 
@@ -281,9 +281,9 @@ async function createActivities(locales: Local[]) {
         name: "Ceia de Natal",
         capacity: 20,
         localId: locales[0].id,
-        date: new Date("2022-12-25T09:00:00-00:00"),
-        startTime: new Date("2022-12-25T09:00:00-00:00"),
-        endTime: new Date("2022-12-25T11:00:00-00:00"),
+        date: new Date("2023-12-25T09:00:00-00:00"),
+        startTime: new Date("2023-12-25T09:00:00-00:00"),
+        endTime: new Date("2023-12-25T11:00:00-00:00"),
       },
     });
     await prisma.activity.create({
@@ -291,9 +291,9 @@ async function createActivities(locales: Local[]) {
         name: "Workshop: Arroz com uva passa",
         capacity: 20,
         localId: locales[2].id,
-        date: new Date("2022-12-25T09:00:00-00:00"),
-        startTime: new Date("2022-12-25T09:00:00-00:00"),
-        endTime: new Date("2022-12-25T10:00:00-00:00"),
+        date: new Date("2023-12-25T09:00:00-00:00"),
+        startTime: new Date("2023-12-25T09:00:00-00:00"),
+        endTime: new Date("2023-12-25T10:00:00-00:00"),
       },
     });
     await prisma.activity.create({

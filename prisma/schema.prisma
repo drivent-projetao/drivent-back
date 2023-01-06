@@ -144,6 +144,8 @@ model Activity {
   updatedAt    DateTime       @default(now()) @db.Timestamp(6)
   Local        Local          @relation(fields: [localId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   UserActivity UserActivity[]
+
+  @@index([date], map: "indexDate")
 }
 
 model Local {

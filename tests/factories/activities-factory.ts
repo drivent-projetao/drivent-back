@@ -19,3 +19,12 @@ export function createActivity(params: Partial<Activity> = {}, locale: Partial<L
     },
   });
 }
+
+export function createUserInActivity(activityId: number, userId: number) {
+  return prisma.userActivity.create({
+    data: {
+      activityId,
+      userId
+    }
+  });
+}

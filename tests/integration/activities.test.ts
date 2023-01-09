@@ -15,6 +15,7 @@ import {
   createRoomWithHotelId,
   createLocale,
   createActivity,
+  createUserInActivity,
 } from "../factories";
 import { cleanDb, generateValidToken } from "../helpers";
 
@@ -265,6 +266,93 @@ describe("GET /activities/:date", () => {
           updatedAt: (activity.updatedAt).toISOString(),
         }]
       }]);
+    });
+  });
+});
+
+describe("GET /availableSlots/:activityId", () => {
+  it("should respond with status 401 if no token is given", async () => {
+    const activityId = faker.random.numeric();
+
+    const response = await server.get(`/activities/availableSlots/${activityId}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if given token is not valid", async () => {
+    const token = faker.lorem.word();
+    const activityId = faker.random.numeric();
+
+    const response = await server.get(`/activities/availableSlots/${activityId}`).set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  it("should respond with status 401 if there is no session for given token", async () => {
+    const userWithoutSession = await createUser();
+    const token = jwt.sign({ userId: userWithoutSession.id }, process.env.JWT_SECRET);
+    const activityId = faker.random.numeric();
+
+    const response = await server.get(`/activities/availableSlots/${activityId}`).set("Authorization", `Bearer ${token}`);
+
+    expect(response.status).toBe(httpStatus.UNAUTHORIZED);
+  });
+
+  describe("when token is valid", () => {
+    it("should respond with status 401 when user ticket is remote ", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeRemote();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createPayment(ticket.id, ticketType.price);
+
+      const activityId = faker.random.numeric();
+
+      const response = await server.get(`/activities/availableSlots/${activityId}`).set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toEqual(httpStatus.UNAUTHORIZED);
+    });
+
+    it("should respond with status 401 when user has no payment ", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      await createTicket(enrollment.id, ticketType.id, TicketStatus.RESERVED);
+
+      const createdHotel = await createHotel();
+      await createRoomWithHotelId(createdHotel.id);
+
+      const activityId = faker.random.numeric();
+
+      const response = await server.get(`/activities/availableSlots/${activityId}`).set("Authorization", `Bearer ${token}`);
+
+      expect(response.status).toEqual(httpStatus.UNAUTHORIZED);
+    });
+    it.only("should respond with status 200 and with the number of users in the activity", async () => {
+      const user = await createUser();
+      const token = await generateValidToken(user);
+      const enrollment = await createEnrollmentWithAddress(user);
+      const ticketType = await createTicketTypeWithHotel();
+      const ticket = await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
+      await createPayment(ticket.id, ticketType.price);
+
+      const createdHotel = await createHotel();
+      await createRoomWithHotelId(createdHotel.id);
+
+      const locale = await createLocale("local teste");
+      const activityParams = {
+        date: new Date(),
+        startTime: new Date(),
+        endTime: new Date(),
+      };
+      const activity = await createActivity(activityParams, locale);
+      await createUserInActivity(activity.id, user.id);
+
+      const response = await server.get(`/activities/availableSlots/${activity.id}`).set("Authorization", `Bearer ${token}`);
+      expect(response.status).toEqual(httpStatus.OK);
+      expect(response.body).toEqual({ numberOfUsers: 1 });
     });
   });
 });

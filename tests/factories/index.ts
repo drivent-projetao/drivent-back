@@ -8,3 +8,4 @@ export * from "./hotels-factory";
 export * from "./booking-factory";
 export * from "./locales-factory";
 export * from "./activities-factory";
+export * from "./application-factory";

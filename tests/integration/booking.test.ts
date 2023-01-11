@@ -235,7 +235,7 @@ describe("POST /booking", () => {
       expect(response.status).toEqual(httpStatus.FORBIDDEN);
     });
 
-    it("should respond with status 403 if user has not paymented ticket", async () => {
+    it("should respond with status 403 if user has not payment ticket", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);

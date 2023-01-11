@@ -331,9 +331,9 @@ async function createActivities(locales: Local[]) {
         name: "Atividade qualquer 4",
         capacity: 60,
         localId: locales[2].id,
-        date: new Date(),
-        startTime: new Date(),
-        endTime: new Date(),
+        date: new Date("2023-12-14T09:00:00-00:00"),
+        startTime: new Date("2023-12-14T09:00:00-00:00"),
+        endTime: new Date("2023-12-14T11:00:00-00:00"),
       },
     });
   }

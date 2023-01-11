@@ -1,15 +1,13 @@
 import { prisma } from "@/config";
+import { User } from "@prisma/client";
+import { createUser } from "./users-factory";
 
-type CreateApplicationParams = {
-  activityId: number;
-  userId: number;
-};
-
-export function createApplication({ activityId, userId }: CreateApplicationParams) {
+export async function createApplication(activityId: number, user?: User) {
+  const incomingUser = user || (await createUser());
   return prisma.userActivity.create({
     data: {
       activityId,
-      userId,
+      userId: incomingUser.id,
     },
   });
 }

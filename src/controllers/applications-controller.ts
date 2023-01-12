@@ -12,7 +12,7 @@ export async function getApplications(req: AuthenticatedRequest, res: Response) 
       
     return res.status(httpStatus.OK).send(applications);
   } catch (error) {
-    return res.sendStatus(httpStatus.NOT_FOUND);
+    return res.sendStatus(httpStatus.UNAUTHORIZED);
   }
 }
 
@@ -21,19 +21,20 @@ export async function getApplication(req: AuthenticatedRequest, res: Response) {
     const { userId } = req;
     const activityId = Number(req.params.activityId);
 
-    if (!activityId) {
-      return res.sendStatus(httpStatus.BAD_REQUEST);
-    }
-
     const application = await applicationsService
       .findApplicationByActivityId(userId, activityId);
-      
+   
     return res.status(httpStatus.OK).send({
       id: application.id,
       activityId: application.activityId,
     });
   } catch (error) {
-    return res.sendStatus(httpStatus.NOT_FOUND);
+    if (error.name === "RequestError") {
+      res.sendStatus(httpStatus.BAD_REQUEST);
+    }
+    if (error.name === "UnauthorizedError") {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
   }
 }
 
@@ -54,7 +55,12 @@ export async function postApplication(req: AuthenticatedRequest, res: Response) 
       activityId: application.activityId,
     });
   } catch (error) {
-    return res.sendStatus(httpStatus.NOT_FOUND);
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    if (error.name === "UnauthorizedError") {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
   }
 }
 
@@ -63,15 +69,12 @@ export async function deleteApplication(req: AuthenticatedRequest, res: Response
     const { userId } = req;
     const activityId = Number(req.params.activityId);
 
-    if (!activityId) {
-      return res.sendStatus(httpStatus.BAD_REQUEST);
-    }
-
-    await applicationsService
-      .deleteApplication(userId, activityId);
+    await applicationsService.deleteApplication(userId, activityId);
 
     return res.sendStatus(httpStatus.OK);
   } catch (error) {
-    return res.sendStatus(httpStatus.NOT_FOUND);
+    if (error.name === "UnauthorizedError") {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
   }
 }

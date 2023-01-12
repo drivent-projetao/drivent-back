@@ -1,4 +1,4 @@
-import { unauthorizedError, notFoundError } from "@/errors";
+import { unauthorizedError, notFoundError, requestError } from "@/errors";
 import { formatDate, formatTime } from "@/utils/formatDate";
 import activityRepository from "@/repositories/activity-repository";
 import applicationRepository from "@/repositories/application-repository";
@@ -18,7 +18,8 @@ async function checkEnrollmentTicket(userId: number) {
 }
 
 async function checkValidApplication(activityId: number, userId: number) {
-  const activity = await activityRepository.findById(activityId);  
+  const activity = await activityRepository.findById(activityId); 
+  
   if (!activity) {
     throw notFoundError();
   }
@@ -29,16 +30,18 @@ async function checkValidApplication(activityId: number, userId: number) {
  
   const applications = await getApplications(userId);
   
-  const unavailability = applications
-    .filter( application => 
-      application.date === date && 
+  if (applications) {
+    const unavailability = applications
+      .filter( application => 
+        application.date === date && 
         (application.startTime === startTime || application.endTime === endTime)
-    );
+      );
   
-  if (unavailability.length > 0) {
-    throw unauthorizedError();
+    if (unavailability.length > 0) {
+      throw unauthorizedError();
+    }
   }
-
+  
   const countApplications = await applicationRepository.countByActivityId(activityId);
  
   if(countApplications === activity.capacity) {
@@ -50,9 +53,6 @@ async function getApplications(userId: number) {
   await checkEnrollmentTicket(userId);
 
   const applicationsResult = await applicationRepository.findByUserId(userId);
-  if (!applicationsResult) {
-    throw notFoundError();
-  }
 
   const applications = applicationsResult.map((a) => {
     return {
@@ -71,7 +71,13 @@ async function getApplications(userId: number) {
 async function findApplicationByActivityId(userId: number, activityId: number) {
   await checkEnrollmentTicket(userId);
 
-  return applicationRepository.findByActivityId({ activityId, userId });
+  const application = await applicationRepository.findByActivityId({ activityId, userId });
+  
+  if (!application) {
+    throw requestError(400, "bad request");
+  }
+
+  return application;
 }
 
 async function postApplicationById(userId: number, activityId: number) {
@@ -84,7 +90,15 @@ async function postApplicationById(userId: number, activityId: number) {
 async function deleteApplication(userId: number, activityId: number) {
   await checkEnrollmentTicket(userId);
 
-  return applicationRepository.deleteById(activityId);
+  const application = await applicationRepository.findByActivityId({ activityId, userId });
+  
+  if (!application) {
+    throw unauthorizedError();
+  }
+
+  await applicationRepository.deleteById(application.id);
+
+  return;
 }
   
 const applicationsService = {

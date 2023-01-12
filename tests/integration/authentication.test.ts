@@ -2,7 +2,7 @@ import app, { init } from "@/app";
 import faker from "@faker-js/faker";
 import httpStatus from "http-status";
 import supertest from "supertest";
-import { createUser } from "../factories";
+import { createEvent, createUser, createAuthUser } from "../factories";
 import { cleanDb } from "../helpers";
 
 beforeAll(async () => {
@@ -83,6 +83,60 @@ describe("POST /auth/sign-in", () => {
 
         expect(response.body.token).toBeDefined();
       });
+    });
+  });
+});
+
+describe("POST /auth/auth-sign-in", () => {
+  it("should respond with status 400 when body is not given", async () => {
+    const response = await server.post("/auth/auth-sign-in");
+
+    expect(response.status).toBe(httpStatus.BAD_REQUEST);
+  });
+
+  it("should respond with status 400 when body is not valid", async () => {
+    const invalidBody = { [faker.lorem.word()]: faker.lorem.word() };
+
+    const response = await server.post("/auth/auth-sign-in").send(invalidBody);
+
+    expect(response.status).toBe(httpStatus.BAD_REQUEST);
+  });
+
+  describe("when body is valid", () => {
+    const generateValidBody = () => ({
+      email: faker.internet.email()
+    });
+    
+    it("should respond with status 200", async () => {
+      await createEvent();
+      const body = generateValidBody();
+
+      const response = await server.post("/auth/auth-sign-in").send(body);
+
+      expect(response.status).toBe(httpStatus.OK);
+    });
+
+    it("should respond with user data", async () => {
+      await createEvent();
+      const body = generateValidBody();
+      const user = await createAuthUser(body);
+
+      const response = await server.post("/auth/auth-sign-in").send(body);
+
+      expect(response.body.user).toEqual({
+        id: user.id,
+        email: user.email,
+      });
+    });
+
+    it("should respond with session token", async () => {
+      await createEvent();
+      const body = generateValidBody();
+      await createAuthUser(body);
+
+      const response = await server.post("/auth/auth-sign-in").send(body);
+
+      expect(response.body.token).toBeDefined();
     });
   });
 });

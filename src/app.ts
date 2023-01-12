@@ -37,7 +37,7 @@ app
   .use("/activities", activitiesRouter)
   .use("/applications", applicationsRouter)
   .use(handleApplicationErrors);
-
+  
 export function init(): Promise<Express> {
   connectDb();
   return Promise.resolve(app);

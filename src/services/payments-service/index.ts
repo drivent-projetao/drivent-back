@@ -41,7 +41,7 @@ async function paymentProcess(ticketId: number, userId: number, cardData: CardPa
 
   const payment = await paymentRepository.processPayment(ticketId, paymentData);
 
-  return payment;
+  return payment[0];
 }
 
 export type CardPaymentParams = {

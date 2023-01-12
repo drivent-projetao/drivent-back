@@ -14,3 +14,12 @@ export async function createUser(params: Partial<User> = {}): Promise<User> {
     },
   });
 }
+
+export async function createAuthUser(params: Partial<User> = {}): Promise<User> {
+  return prisma.user.create({
+    data: {
+      email: params.email || faker.internet.email(),
+      password: null
+    },
+  });
+}

@@ -46,17 +46,14 @@ async function bookingRoomById(userId: number, roomId: number) {
 
 async function changeBookingRoomById(userId: number, roomId: number) {
   await checkValidBooking(roomId);
-  const booking = await bookingRepository.findByUserId(userId);
 
-  if (!booking || booking.userId !== userId) {
+  const booking = await bookingRepository.updateBooking(userId, roomId);
+
+  if (!booking) {
     throw cannotBookingError();
   }
 
-  return bookingRepository.upsertBooking({
-    id: booking.id,
-    roomId,
-    userId
-  });
+  return booking;
 }
 
 async function countBookingByRoomId(roomId: number) {

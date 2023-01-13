@@ -330,7 +330,7 @@ describe("GET /availableSlots/:activityId", () => {
 
       expect(response.status).toEqual(httpStatus.UNAUTHORIZED);
     });
-    it.only("should respond with status 200 and with the number of users in the activity", async () => {
+    it("should respond with status 200 and with the number of users in the activity", async () => {
       const user = await createUser();
       const token = await generateValidToken(user);
       const enrollment = await createEnrollmentWithAddress(user);

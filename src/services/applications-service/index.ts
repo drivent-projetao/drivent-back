@@ -18,8 +18,8 @@ async function checkEnrollmentTicket(userId: number) {
 }
 
 async function checkValidApplication(activityId: number, userId: number) {
-  const activity = await activityRepository.findById(activityId); 
-  
+  const activity = await activityRepository.findById(activityId);
+
   if (!activity) {
     throw notFoundError();
   }
@@ -27,24 +27,23 @@ async function checkValidApplication(activityId: number, userId: number) {
   const date = formatDate(activity.date);
   const startTime = formatTime(activity.startTime);
   const endTime = formatTime(activity.endTime);
- 
+
   const applications = await getApplications(userId);
-  
+
   if (applications) {
-    const unavailability = applications
-      .filter( application => 
-        application.date === date && 
-        (application.startTime === startTime || application.endTime === endTime)
-      );
-  
+    const unavailability = applications.filter(
+      (application) =>
+        application.date === date && (application.startTime === startTime || application.endTime === endTime),
+    );
+
     if (unavailability.length > 0) {
       throw unauthorizedError();
     }
   }
-  
+
   const countApplications = await applicationRepository.countByActivityId(activityId);
- 
-  if(countApplications === activity.capacity) {
+
+  if (countApplications === activity.capacity) {
     throw unauthorizedError();
   }
 }
@@ -61,10 +60,10 @@ async function getApplications(userId: number) {
       capacity: a.Activity.capacity,
       date: formatDate(a.Activity.date),
       startTime: formatTime(a.Activity.startTime),
-      endTime: formatTime(a.Activity.endTime)
+      endTime: formatTime(a.Activity.endTime),
     };
   });
-  
+
   return applications;
 }
 
@@ -72,7 +71,7 @@ async function findApplicationByActivityId(userId: number, activityId: number) {
   await checkEnrollmentTicket(userId);
 
   const application = await applicationRepository.findByActivityId({ activityId, userId });
-  
+
   if (!application) {
     throw requestError(400, "bad request");
   }
@@ -83,15 +82,16 @@ async function findApplicationByActivityId(userId: number, activityId: number) {
 async function postApplicationById(userId: number, activityId: number) {
   await checkEnrollmentTicket(userId);
   await checkValidApplication(activityId, userId);
+  const activity = await activityRepository.findById(activityId);
 
-  return applicationRepository.create({ activityId, userId });
+  return await applicationRepository.create(activityId, userId, activity.capacity);
 }
 
 async function deleteApplication(userId: number, activityId: number) {
   await checkEnrollmentTicket(userId);
 
   const application = await applicationRepository.findByActivityId({ activityId, userId });
-  
+
   if (!application) {
     throw unauthorizedError();
   }
@@ -100,12 +100,12 @@ async function deleteApplication(userId: number, activityId: number) {
 
   return;
 }
-  
+
 const applicationsService = {
   getApplications,
   findApplicationByActivityId,
   postApplicationById,
-  deleteApplication
+  deleteApplication,
 };
-  
+
 export default applicationsService;

@@ -56,9 +56,9 @@ export async function changeBooking(req: AuthenticatedRequest, res: Response) {
     }
 
     const booking = await bookingService.changeBookingRoomById(userId, Number(roomId));
-
+    
     return res.status(httpStatus.OK).send({
-      bookingId: booking.id,
+      bookingId: booking,
     });
   } catch (error) {
     if (error.name === "CannotBookingError") {

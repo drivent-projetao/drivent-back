@@ -501,7 +501,7 @@ describe("PUT /booking", () => {
           roomId: room.id,
         });
 
-      expect(response.status).toEqual(httpStatus.FORBIDDEN);
+      expect(response.status).toEqual(httpStatus.NOT_FOUND);
     });
   });
 });

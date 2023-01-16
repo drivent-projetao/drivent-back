@@ -2,6 +2,7 @@ import { AuthenticatedRequest } from "@/middlewares";
 import { Response } from "express";
 import httpStatus from "http-status";
 import applicationsService from "@/services/applications-service";
+import { redisClient } from "@/app";
 
 export async function getApplications(req: AuthenticatedRequest, res: Response) {
   try {
@@ -49,7 +50,7 @@ export async function postApplication(req: AuthenticatedRequest, res: Response) 
 
     const application = await applicationsService
       .postApplicationById(userId, Number(activityId));
-
+    await redisClient.del(`numberOfUsers_${activityId}`);
     return res.status(httpStatus.OK).send({
       id: application.id,
       activityId: application.activityId,
@@ -70,6 +71,7 @@ export async function deleteApplication(req: AuthenticatedRequest, res: Response
     const activityId = Number(req.params.activityId);
 
     await applicationsService.deleteApplication(userId, activityId);
+    await redisClient.del(`numberOfUsers_${activityId}`);
 
     return res.sendStatus(httpStatus.OK);
   } catch (error) {

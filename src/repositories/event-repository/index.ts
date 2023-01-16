@@ -5,9 +5,9 @@ async function findFirst() {
   const event = await redisClient.get("event");
   let eventDb = {};
 
-  if(!event) {
+  if (!event) {
     eventDb = await prisma.event.findFirst();
-    await redisClient.set("event", JSON.stringify(event));
+    await redisClient.set("event", JSON.stringify(eventDb));
     return eventDb;
   }
 
